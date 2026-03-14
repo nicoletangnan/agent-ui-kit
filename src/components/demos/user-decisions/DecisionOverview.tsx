@@ -1,4 +1,3 @@
-import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Layers, Zap } from "lucide-react"
 

@@ -1,5 +1,5 @@
 import { useState, createContext, useContext } from "react"
-import { ShieldCheck, ShieldAlert, RefreshCw, Camera, Terminal, CheckCircle2, XCircle, Loader2 } from "lucide-react"
+import { ShieldCheck, ShieldAlert, RefreshCw, Camera, Terminal, CheckCircle2, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 type VerifyViewMode = "checking" | "found" | "clean"
