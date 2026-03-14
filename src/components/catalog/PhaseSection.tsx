@@ -12,7 +12,7 @@ interface PhaseSectionProps {
   children: ReactNode
 }
 
-export function PhaseSection({ number, label, labelCn, description, descriptionEn, color, children }: PhaseSectionProps) {
+export function PhaseSection({ number, label, labelCn, description, descriptionEn, children }: PhaseSectionProps) {
   const { locale } = useLocale()
   const resolvedDescription = locale === "en" && descriptionEn ? descriptionEn : description
 
@@ -20,8 +20,7 @@ export function PhaseSection({ number, label, labelCn, description, descriptionE
     <section id={label.toLowerCase().replace(/\s+/g, "-")} className="scroll-mt-20">
       <div className="flex items-start gap-4 mb-6">
         <div
-          className="flex items-center justify-center size-9 rounded-lg text-white text-sm font-semibold shrink-0 mt-0.5"
-          style={{ backgroundColor: color }}
+          className="flex items-center justify-center size-9 rounded-lg border border-border text-foreground text-sm font-semibold shrink-0 mt-0.5"
         >
           {number}
         </div>
