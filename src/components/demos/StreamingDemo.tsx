@@ -42,6 +42,14 @@ function useCharStream(text: string, speed = 20, autoStart = true) {
   const [displayed, setDisplayed] = useState("")
   const [streaming, setStreaming] = useState(autoStart)
   const idx = useRef(0)
+  const prevText = useRef(text)
+
+  if (text !== prevText.current) {
+    prevText.current = text
+    idx.current = 0
+    setDisplayed("")
+    setStreaming(true)
+  }
 
   useEffect(() => {
     if (!streaming) return
@@ -305,9 +313,16 @@ function renderMdSegment(seg: MdSegment, idx: number) {
 }
 
 function StreamMarkdownDemo() {
-  const { t } = useLocale()
+  const { locale, t } = useLocale()
   const [visibleCount, setVisibleCount] = useState(0)
   const [streaming, setStreaming] = useState(true)
+  const prevLocale = useRef(locale)
+
+  if (locale !== prevLocale.current) {
+    prevLocale.current = locale
+    setVisibleCount(0)
+    setStreaming(true)
+  }
 
   const mdSegments: MdSegment[] = [
     { type: "heading", level: 3, text: t("streaming.md.h1") },
@@ -392,7 +407,7 @@ type StreamPhase =
   | { type: "pause"; tool: string; duration: number }
 
 function StreamPausedDemo() {
-  const { t } = useLocale()
+  const { locale, t } = useLocale()
 
   const pauseDemoPhases: StreamPhase[] = [
     { type: "text", content: t("streaming.pause.text1") },
@@ -407,6 +422,16 @@ function StreamPausedDemo() {
   const [charIdx, setCharIdx] = useState(0)
   const [paused, setPaused] = useState(false)
   const [done, setDone] = useState(false)
+  const prevLocale = useRef(locale)
+
+  if (locale !== prevLocale.current) {
+    prevLocale.current = locale
+    setSegments([])
+    setCurrentPhase(0)
+    setCharIdx(0)
+    setPaused(false)
+    setDone(false)
+  }
 
   useEffect(() => {
     if (done) return
@@ -451,7 +476,7 @@ function StreamPausedDemo() {
       return () => clearTimeout(timer)
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPhase, charIdx, done])
+  }, [currentPhase, charIdx, done, locale])
 
   const restart = useCallback(() => {
     setSegments([])
