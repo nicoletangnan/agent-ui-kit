@@ -1,48 +1,47 @@
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Layers, Zap, Wrench } from "lucide-react"
+import { useLocale } from "@/i18n/locale-context"
 
 const CATEGORIES = [
   { id: "tool-file", label: "File Operations", tools: "Read · Write · StrReplace · Delete · EditNotebook", toolCount: 5, what: "tools" },
   { id: "tool-search", label: "Search", tools: "Grep · Glob · SemanticSearch", toolCount: 3, what: "tools" },
   { id: "tool-terminal", label: "Terminal", tools: "Shell", toolCount: 1, what: "tools" },
   { id: "tool-browser", label: "Browser", tools: "Navigate · Snapshot · Screenshot · Click · Type", toolCount: 5, what: "tools" },
-  { id: "tool-agent", label: "Agent & User", tools: "Task · AskQuestion · SwitchMode", toolCount: 3, what: "tools" },
+  { id: "tool-agent", label: "Subagent", tools: "Task (explore · shell · browser-use)", toolCount: 1, what: "tool" },
   { id: "tool-verify", label: "Verify & Manage", tools: "ReadLints · TodoWrite", toolCount: 2, what: "tools" },
   { id: "tool-web", label: "Web & Media", tools: "WebSearch · WebFetch · GenerateImage", toolCount: 3, what: "tools" },
 ] as const
 
-const STATES = [
-  { name: "tool_selected", description: "Agent 决定调用某个工具，尚未执行" },
-  { name: "tool_calling", description: "工具正在执行中" },
-  { name: "tool_result", description: "工具成功返回结果" },
-  { name: "tool_error", description: "工具执行出错" },
-  { name: "tool_result_folded", description: "结果已折叠，可展开查看" },
+const STATE_KEYS = [
+  { name: "tool_selected", descKey: "toolOverview.state.tool_selected" },
+  { name: "tool_calling", descKey: "toolOverview.state.tool_calling" },
+  { name: "tool_result", descKey: "toolOverview.state.tool_result" },
+  { name: "tool_error", descKey: "toolOverview.state.tool_error" },
+  { name: "tool_result_folded", descKey: "toolOverview.state.tool_cancelled" },
 ] as const
 
-const TOOLS = [
-  { name: "Read", category: "File Operations", description: "读取文件内容" },
-  { name: "Write", category: "File Operations", description: "创建或覆盖文件" },
-  { name: "StrReplace", category: "File Operations", description: "精确替换文件中的字符串" },
-  { name: "Delete", category: "File Operations", description: "删除文件" },
-  { name: "EditNotebook", category: "File Operations", description: "编辑 Jupyter Notebook cell" },
-  { name: "Grep", category: "Search", description: "正则搜索代码内容" },
-  { name: "Glob", category: "Search", description: "按文件名模式搜索" },
-  { name: "SemanticSearch", category: "Search", description: "按含义语义搜索代码" },
-  { name: "Shell", category: "Terminal", description: "执行终端命令" },
-  { name: "browser_navigate", category: "Browser", description: "打开网页 URL" },
-  { name: "browser_snapshot", category: "Browser", description: "获取页面 DOM 结构" },
-  { name: "browser_screenshot", category: "Browser", description: "网页截图" },
-  { name: "browser_click", category: "Browser", description: "点击页面元素" },
-  { name: "browser_type", category: "Browser", description: "在页面输入文字" },
-  { name: "Task", category: "Agent & User", description: "启动子 Agent 处理子任务" },
-  { name: "AskQuestion", category: "Agent & User", description: "向用户提问（单选/多选）" },
-  { name: "SwitchMode", category: "Agent & User", description: "切换交互模式" },
-  { name: "ReadLints", category: "Verify & Manage", description: "检查代码 lint 错误" },
-  { name: "TodoWrite", category: "Verify & Manage", description: "更新任务列表" },
-  { name: "WebSearch", category: "Web & Media", description: "搜索互联网" },
-  { name: "WebFetch", category: "Web & Media", description: "抓取网页内容" },
-  { name: "GenerateImage", category: "Web & Media", description: "AI 生成图片" },
+const TOOL_KEYS = [
+  { name: "Read", category: "File Operations", descKey: "tool.Read.description" },
+  { name: "Write", category: "File Operations", descKey: "tool.Write.description" },
+  { name: "StrReplace", category: "File Operations", descKey: "tool.StrReplace.description" },
+  { name: "Delete", category: "File Operations", descKey: "tool.Delete.description" },
+  { name: "EditNotebook", category: "File Operations", descKey: "tool.EditNotebook.description" },
+  { name: "Grep", category: "Search", descKey: "tool.Grep.description" },
+  { name: "Glob", category: "Search", descKey: "tool.Glob.description" },
+  { name: "SemanticSearch", category: "Search", descKey: "tool.SemanticSearch.description" },
+  { name: "Shell", category: "Terminal", descKey: "tool.Shell.description" },
+  { name: "browser_navigate", category: "Browser", descKey: "tool.Navigate.description" },
+  { name: "browser_snapshot", category: "Browser", descKey: "tool.Snapshot.description" },
+  { name: "browser_screenshot", category: "Browser", descKey: "tool.Screenshot.description" },
+  { name: "browser_click", category: "Browser", descKey: "tool.Click.description" },
+  { name: "browser_type", category: "Browser", descKey: "tool.Type.description" },
+  { name: "Task", category: "Subagent", descKey: "tool.Task.description" },
+  { name: "ReadLints", category: "Verify & Manage", descKey: "tool.ReadLints.description" },
+  { name: "TodoWrite", category: "Verify & Manage", descKey: "tool.TodoWrite.description" },
+  { name: "WebSearch", category: "Web & Media", descKey: "tool.WebSearch.description" },
+  { name: "WebFetch", category: "Web & Media", descKey: "tool.WebFetch.description" },
+  { name: "GenerateImage", category: "Web & Media", descKey: "tool.GenerateImage.description" },
 ] as const
 
 export { CATEGORIES }
@@ -82,6 +81,7 @@ function CategoriesTable() {
 }
 
 function StatesTable() {
+  const { t } = useLocale()
   return (
     <div className="rounded-lg border border-border overflow-hidden">
       <table className="w-full text-xs">
@@ -92,10 +92,10 @@ function StatesTable() {
           </tr>
         </thead>
         <tbody className="divide-y divide-border/50">
-          {STATES.map((s) => (
+          {STATE_KEYS.map((s) => (
             <tr key={s.name} className="hover:bg-muted/20 transition-colors">
               <td className="px-3 py-1.5"><code className="text-[11px] font-mono text-foreground">{s.name}</code></td>
-              <td className="px-3 py-1.5 text-muted-foreground">{s.description}</td>
+              <td className="px-3 py-1.5 text-muted-foreground">{t(s.descKey)}</td>
             </tr>
           ))}
         </tbody>
@@ -105,6 +105,7 @@ function StatesTable() {
 }
 
 function ToolsTable() {
+  const { t } = useLocale()
   return (
     <div className="rounded-lg border border-border overflow-hidden">
       <table className="w-full text-xs">
@@ -116,13 +117,13 @@ function ToolsTable() {
           </tr>
         </thead>
         <tbody className="divide-y divide-border/50">
-          {TOOLS.map((t) => (
-            <tr key={t.name} className="hover:bg-muted/20 transition-colors">
-              <td className="px-3 py-1.5"><code className="text-[11px] font-mono text-foreground">{t.name}</code></td>
+          {TOOL_KEYS.map((tool) => (
+            <tr key={tool.name} className="hover:bg-muted/20 transition-colors">
+              <td className="px-3 py-1.5"><code className="text-[11px] font-mono text-foreground">{tool.name}</code></td>
               <td className="px-3 py-1.5">
-                <Badge variant="secondary" className="text-[10px] font-normal py-0 px-1.5">{t.category}</Badge>
+                <Badge variant="secondary" className="text-[10px] font-normal py-0 px-1.5">{tool.category}</Badge>
               </td>
-              <td className="px-3 py-1.5 text-muted-foreground">{t.description}</td>
+              <td className="px-3 py-1.5 text-muted-foreground">{t(tool.descKey)}</td>
             </tr>
           ))}
         </tbody>
@@ -132,10 +133,12 @@ function ToolsTable() {
 }
 
 export function ToolOverview() {
+  const { t } = useLocale()
+
   return (
     <div className="space-y-4">
       <p className="text-sm text-muted-foreground leading-relaxed">
-        Agent 通过调用工具来完成任务。每次调用都会经历 5 种状态之一，工具共 21 种，分为 7 个类别。点击类别名称可跳转到对应的交互 Demo，使用顶部的状态切换器查看不同状态。
+        {t("toolOverview.intro")}
       </p>
 
       <Tabs defaultValue={0}>
@@ -150,7 +153,7 @@ export function ToolOverview() {
           </TabsTrigger>
           <TabsTrigger value={2} className="gap-1.5 text-xs">
             <Wrench className="size-3.5" />
-            21 Tools
+            19 Tools
           </TabsTrigger>
         </TabsList>
 

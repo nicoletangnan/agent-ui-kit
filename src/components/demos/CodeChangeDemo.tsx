@@ -6,6 +6,7 @@ import { FileCreateDemo } from "./code-changes/FileCreateDemo"
 import { FileEditDemo } from "./code-changes/FileEditDemo"
 import { MultiFileDemo } from "./code-changes/MultiFileDemo"
 import { cn } from "@/lib/utils"
+import { useLocale } from "@/i18n/locale-context"
 
 const DEMO_MAP: Record<string, React.ComponentType> = {
   "cc-file-create": FileCreateDemo,
@@ -13,10 +14,10 @@ const DEMO_MAP: Record<string, React.ComponentType> = {
   "cc-multi-file": MultiFileDemo,
 }
 
-const SEGMENTS: { value: CodeChangeViewMode; label: string; icon: React.ElementType; description: string }[] = [
-  { value: "pending", label: "Pending", icon: Clock, description: "等待用户审核变更" },
-  { value: "accepted", label: "Accepted", icon: CheckCircle2, description: "用户已接受变更" },
-  { value: "rejected", label: "Rejected", icon: XCircle, description: "用户已拒绝变更" },
+const SEGMENTS: { value: CodeChangeViewMode; label: string; icon: React.ElementType; descKey: string }[] = [
+  { value: "pending", label: "Pending", icon: Clock, descKey: "codeChange.segment.pending.description" },
+  { value: "accepted", label: "Accepted", icon: CheckCircle2, descKey: "codeChange.segment.accepted.description" },
+  { value: "rejected", label: "Rejected", icon: XCircle, descKey: "codeChange.segment.rejected.description" },
 ]
 
 function SegmentedControl() {
@@ -51,10 +52,12 @@ function SegmentedControl() {
 export { CODE_CHANGE_CATEGORIES }
 
 function CodeChangeDemoInner() {
+  const { t } = useLocale()
+
   return (
     <StateCard
       stateName="file_creating | file_editing → diff_shown → diff_pending → diff_accepted | diff_rejected"
-      description="3 types · 7 states — 展开查看完整定义"
+      description={t("codeChange.statecard")}
       collapsibleExtra={<CodeChangeOverview />}
     >
       <div className="space-y-10">

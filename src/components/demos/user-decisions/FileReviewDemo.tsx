@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { DecisionCardBase } from "./DecisionCardBase"
 import { useDecisionState } from "./DecisionStateContext"
+import { useLocale } from "@/i18n/locale-context"
 
 const DIFF_LINES = [
   { type: "context" as const, num: 1, text: "function App() {" },
@@ -18,6 +19,7 @@ const DIFF_LINES = [
 
 export function FileReviewDemo() {
   const { mode } = useDecisionState()
+  const { t } = useLocale()
 
   return (
     <div className="space-y-6">
@@ -26,23 +28,23 @@ export function FileReviewDemo() {
           <FileEdit className="size-3" />
           File Review
         </Badge>
-        <span className="text-xs text-muted-foreground">awaiting_file_review — 等待用户审核代码变更</span>
+        <span className="text-xs text-muted-foreground">{t("fileReview.subtitle")}</span>
       </div>
 
       <DecisionCardBase
         icon={FileEdit}
         title="src/App.tsx"
-        subtitle="Agent 修改了此文件，等待审核"
+        subtitle={t("fileReview.cardSubtitle")}
         approvedContent={
           <div className="flex items-center gap-2 text-sm text-emerald-700">
             <CheckCircle2 className="size-4 shrink-0" />
-            <span>变更已接受，文件已保存</span>
+            <span>{t("fileReview.approved.message")}</span>
           </div>
         }
         rejectedContent={
           <div className="flex items-center gap-2 text-sm text-red-600">
             <XCircle className="size-4 shrink-0" />
-            <span>变更已拒绝，文件已回退</span>
+            <span>{t("fileReview.rejected.message")}</span>
           </div>
         }
       >

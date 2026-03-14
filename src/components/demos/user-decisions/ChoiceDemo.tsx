@@ -2,14 +2,17 @@ import { MessageCircleQuestion, CheckCircle2 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { DecisionCardBase } from "./DecisionCardBase"
 import { cn } from "@/lib/utils"
-
-const OPTIONS = [
-  { label: "useState + useReducer", desc: "轻量级，适合简单场景", selected: false },
-  { label: "Zustand", desc: "简洁的全局状态管理", selected: true },
-  { label: "Redux Toolkit", desc: "完整的状态管理生态", selected: false },
-]
+import { useLocale } from "@/i18n/locale-context"
 
 export function ChoiceDemo() {
+  const { t } = useLocale()
+
+  const OPTIONS = [
+    { label: "useState + useReducer", desc: t("choice.option.useState.desc"), selected: false },
+    { label: "Zustand", desc: t("choice.option.zustand.desc"), selected: true },
+    { label: "Redux Toolkit", desc: t("choice.option.redux.desc"), selected: false },
+  ]
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
@@ -17,21 +20,21 @@ export function ChoiceDemo() {
           <MessageCircleQuestion className="size-3" />
           Choice Card
         </Badge>
-        <span className="text-xs text-muted-foreground">awaiting_choice — Agent 向用户提问，等待选择</span>
+        <span className="text-xs text-muted-foreground">{t("choice.subtitle")}</span>
       </div>
 
       <DecisionCardBase
         icon={MessageCircleQuestion}
-        title="你希望使用哪种状态管理方案？"
+        title={t("choice.question")}
         approvedContent={
           <div className="flex items-center gap-2 text-sm text-emerald-700">
             <CheckCircle2 className="size-4 shrink-0" />
-            <span>用户选择了 <strong>Zustand</strong>，Agent 将使用该方案继续执行</span>
+            <span dangerouslySetInnerHTML={{ __html: t("choice.approved.message") }} />
           </div>
         }
         rejectedContent={
           <div className="text-sm text-muted-foreground">
-            用户跳过了选择，Agent 将使用默认方案
+            {t("choice.rejected.message")}
           </div>
         }
       >

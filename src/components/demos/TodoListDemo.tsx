@@ -1,6 +1,7 @@
 import { useState, createContext, useContext } from "react"
 import { CheckCircle2, Circle, Loader2, ListTodo, Sparkles, Ban } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useLocale } from "@/i18n/locale-context"
 
 type TodoViewMode = "creating" | "in_progress" | "completed" | "no_plan"
 
@@ -49,16 +50,16 @@ type TodoStatus = "pending" | "in_progress" | "completed"
 
 interface Todo {
   id: string
-  content: string
+  contentKey: string
   status: TodoStatus
 }
 
-const TODOS: Todo[] = [
-  { id: "1", content: "读取项目结构和现有文件", status: "completed" },
-  { id: "2", content: "创建 TodoList 组件", status: "completed" },
-  { id: "3", content: "添加状态管理和交互逻辑", status: "in_progress" },
-  { id: "4", content: "更新 App.tsx 路由", status: "pending" },
-  { id: "5", content: "验证页面渲染", status: "pending" },
+const TODO_KEYS: Todo[] = [
+  { id: "1", contentKey: "todo.1", status: "completed" },
+  { id: "2", contentKey: "todo.2", status: "completed" },
+  { id: "3", contentKey: "todo.3", status: "in_progress" },
+  { id: "4", contentKey: "todo.4", status: "pending" },
+  { id: "5", contentKey: "todo.5", status: "pending" },
 ]
 
 function StatusIcon({ status }: { status: TodoStatus }) {
@@ -72,22 +73,20 @@ function StatusIcon({ status }: { status: TodoStatus }) {
   }
 }
 
-function getTodosForMode(mode: TodoViewMode): Todo[] | null {
+function getTodosForMode(mode: TodoViewMode): (Todo & { status: TodoStatus })[] | null {
   if (mode === "no_plan") return null
   if (mode === "creating") {
-    return TODOS.map((t, i) => ({
-      ...t,
-      status: i < 2 ? "pending" as const : "pending" as const,
-    }))
+    return TODO_KEYS.map((t) => ({ ...t, status: "pending" as const }))
   }
   if (mode === "completed") {
-    return TODOS.map((t) => ({ ...t, status: "completed" as const }))
+    return TODO_KEYS.map((t) => ({ ...t, status: "completed" as const }))
   }
-  return TODOS
+  return TODO_KEYS
 }
 
 function TodoCard() {
   const { mode } = useContext(TodoStateContext)
+  const { t } = useLocale()
 
   if (mode === "no_plan") {
     return (
@@ -95,7 +94,7 @@ function TodoCard() {
         <div className="flex items-center gap-2.5 px-3 py-2.5 text-sm text-muted-foreground">
           <ListTodo className="size-4 shrink-0" />
           <span className="font-medium text-foreground">No plan needed</span>
-          <span className="text-xs text-muted-foreground/60 flex-1 text-left">简单任务，Agent 直接执行</span>
+          <span className="text-xs text-muted-foreground/60 flex-1 text-left">{t("todo.noPlan")}</span>
           <CheckCircle2 className="size-3.5 text-emerald-500 shrink-0" />
         </div>
       </div>
@@ -103,7 +102,7 @@ function TodoCard() {
   }
 
   const todos = getTodosForMode(mode)!
-  const completedCount = todos.filter(t => t.status === "completed").length
+  const completedCount = todos.filter((item) => item.status === "completed").length
   const isCreating = mode === "creating"
 
   return (
@@ -139,7 +138,7 @@ function TodoCard() {
               todo.status === "completed" && "line-through",
               isCreating && i >= 3 && "invisible",
             )}>
-              {todo.content}
+              {t(todo.contentKey as Parameters<typeof t>[0])}
             </span>
           </div>
         ))}
@@ -150,7 +149,7 @@ function TodoCard() {
               <span className="size-1 rounded-full bg-muted-foreground/40 animate-bounce [animation-delay:150ms]" />
               <span className="size-1 rounded-full bg-muted-foreground/40 animate-bounce [animation-delay:300ms]" />
             </span>
-            <span className="text-xs">正在规划任务...</span>
+            <span className="text-xs">{t("todo.planning")}</span>
           </div>
         )}
       </div>

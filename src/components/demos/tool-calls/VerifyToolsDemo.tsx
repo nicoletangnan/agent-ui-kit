@@ -2,8 +2,10 @@ import { ShieldCheck, ListTodo } from "lucide-react"
 import { ToolCallBase } from "./ToolCallBase"
 import { Badge } from "@/components/ui/badge"
 import { CheckCircle2, Circle, Loader2 } from "lucide-react"
+import { useLocale } from "@/i18n/locale-context"
 
 export function VerifyToolsDemo() {
+  const { t } = useLocale()
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
@@ -11,7 +13,7 @@ export function VerifyToolsDemo() {
           <ShieldCheck className="size-3" />
           Verify & Manage
         </Badge>
-        <span className="text-xs text-muted-foreground">检查代码质量、管理任务列表</span>
+        <span className="text-xs text-muted-foreground">{t("verifyTools.subtitle")}</span>
       </div>
 
       <div className="space-y-2">
@@ -51,23 +53,23 @@ export function VerifyToolsDemo() {
             <div className="text-xs space-y-1">
               <div className="flex items-center gap-2 py-0.5">
                 <CheckCircle2 className="size-3.5 text-emerald-500 shrink-0" />
-                <span className="text-muted-foreground line-through">读取项目结构和现有文件</span>
+                <span className="text-muted-foreground line-through">{t("todo.1")}</span>
               </div>
               <div className="flex items-center gap-2 py-0.5">
                 <CheckCircle2 className="size-3.5 text-emerald-500 shrink-0" />
-                <span className="text-muted-foreground line-through">创建 TodoList 组件</span>
+                <span className="text-muted-foreground line-through">{t("todo.2")}</span>
               </div>
               <div className="flex items-center gap-2 py-0.5">
                 <Loader2 className="size-3.5 text-amber-500 animate-spin shrink-0" />
-                <span className="text-foreground font-medium">添加状态管理和交互逻辑</span>
+                <span className="text-foreground font-medium">{t("todo.3")}</span>
               </div>
               <div className="flex items-center gap-2 py-0.5">
                 <Circle className="size-3.5 text-muted-foreground/30 shrink-0" />
-                <span className="text-muted-foreground">更新 App.tsx 路由</span>
+                <span className="text-muted-foreground">{t("todo.4")}</span>
               </div>
               <div className="flex items-center gap-2 py-0.5">
                 <Circle className="size-3.5 text-muted-foreground/30 shrink-0" />
-                <span className="text-muted-foreground">验证页面渲染</span>
+                <span className="text-muted-foreground">{t("todo.5")}</span>
               </div>
             </div>
           }

@@ -1,26 +1,28 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Layers, Zap } from "lucide-react"
+import { useLocale } from "@/i18n/locale-context"
 
 const CATEGORIES = [
-  { id: "ud-choice", label: "Choice Card", scenario: "AskQuestion — 单选 / 多选方案", what: "选择" },
-  { id: "ud-confirmation", label: "Confirmation", scenario: "SwitchMode — 模式切换确认", what: "确认" },
-  { id: "ud-permission", label: "Permission", scenario: "Shell — 危险命令授权", what: "授权" },
-  { id: "ud-file-review", label: "File Review", scenario: "StrReplace / Write — 代码变更审核", what: "审核" },
+  { id: "ud-choice", label: "Choice Card", scenarioKey: "decisionOverview.cat.choice.scenario2" },
+  { id: "ud-confirmation", label: "Confirmation", scenarioKey: "decisionOverview.cat.confirmation.scenario2" },
+  { id: "ud-permission", label: "Permission", scenarioKey: "decisionOverview.cat.permission.scenario2" },
+  { id: "ud-file-review", label: "File Review", scenarioKey: "decisionOverview.cat.fileReview.scenario2" },
 ] as const
 
-const STATES = [
-  { name: "awaiting_choice", description: "等待用户在多个选项中做出选择" },
-  { name: "awaiting_confirmation", description: "等待用户确认操作（如模式切换）" },
-  { name: "awaiting_file_review", description: "等待用户审核文件变更" },
-  { name: "awaiting_permission", description: "等待用户授权（如终端命令执行）" },
-  { name: "user_approved", description: "用户批准了操作" },
-  { name: "user_rejected", description: "用户拒绝了操作" },
-  { name: "user_edited", description: "用户手动编辑了 Agent 的输出" },
+const STATE_KEYS = [
+  { name: "awaiting_choice", descKey: "decisionOverview.state.awaiting_choice" },
+  { name: "awaiting_confirmation", descKey: "decisionOverview.state.awaiting_confirmation" },
+  { name: "awaiting_file_review", descKey: "decisionOverview.state.awaiting_file_review" },
+  { name: "awaiting_permission", descKey: "decisionOverview.state.awaiting_permission" },
+  { name: "user_approved", descKey: "decisionOverview.state.user_approved" },
+  { name: "user_rejected", descKey: "decisionOverview.state.user_rejected" },
+  { name: "user_edited", descKey: "decisionOverview.state.user_edited" },
 ] as const
 
 export { CATEGORIES as DECISION_CATEGORIES }
 
 function CategoriesTable() {
+  const { t } = useLocale()
   return (
     <div className="rounded-lg border border-border overflow-hidden">
       <table className="w-full text-xs">
@@ -41,7 +43,7 @@ function CategoriesTable() {
                   {cat.label}
                 </a>
               </td>
-              <td className="px-3 py-1.5 text-muted-foreground font-mono text-[11px]">{cat.scenario}</td>
+              <td className="px-3 py-1.5 text-muted-foreground font-mono text-[11px]">{t(cat.scenarioKey)}</td>
             </tr>
           ))}
         </tbody>
@@ -51,6 +53,7 @@ function CategoriesTable() {
 }
 
 function StatesTable() {
+  const { t } = useLocale()
   return (
     <div className="rounded-lg border border-border overflow-hidden">
       <table className="w-full text-xs">
@@ -61,10 +64,10 @@ function StatesTable() {
           </tr>
         </thead>
         <tbody className="divide-y divide-border/50">
-          {STATES.map((s) => (
+          {STATE_KEYS.map((s) => (
             <tr key={s.name} className="hover:bg-muted/20 transition-colors">
               <td className="px-3 py-1.5"><code className="text-[11px] font-mono text-foreground">{s.name}</code></td>
-              <td className="px-3 py-1.5 text-muted-foreground">{s.description}</td>
+              <td className="px-3 py-1.5 text-muted-foreground">{t(s.descKey)}</td>
             </tr>
           ))}
         </tbody>
@@ -74,10 +77,12 @@ function StatesTable() {
 }
 
 export function DecisionOverview() {
+  const { t } = useLocale()
+
   return (
     <div className="space-y-4">
       <p className="text-sm text-muted-foreground leading-relaxed">
-        Agent 执行过程中需要用户介入的时刻。每种决策场景都有 awaiting → approved / rejected 的状态流转，使用顶部的状态切换器查看不同阶段。
+        {t("decisionOverview.intro")}
       </p>
 
       <Tabs defaultValue={0}>

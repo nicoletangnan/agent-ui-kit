@@ -1,8 +1,10 @@
 import { Search, FolderSearch, Sparkles } from "lucide-react"
 import { ToolCallBase } from "./ToolCallBase"
 import { Badge } from "@/components/ui/badge"
+import { useLocale } from "@/i18n/locale-context"
 
 export function SearchToolsDemo() {
+  const { t } = useLocale()
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
@@ -10,7 +12,7 @@ export function SearchToolsDemo() {
           <Search className="size-3" />
           Search
         </Badge>
-        <span className="text-xs text-muted-foreground">在代码库中搜索内容、文件名或语义</span>
+        <span className="text-xs text-muted-foreground">{t("searchTools.subtitle")}</span>
       </div>
 
       <div className="space-y-2">

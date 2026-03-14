@@ -1,6 +1,7 @@
 import { useState, createContext, useContext } from "react"
 import { ChevronDown, Brain, Loader2, CheckCircle2, Sparkles } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useLocale } from "@/i18n/locale-context"
 
 type ThinkingViewMode = "started" | "streaming" | "complete"
 
@@ -44,20 +45,24 @@ function SegmentedControl() {
   )
 }
 
-const COT_CONTENT = (
-  <div className="border-t border-border/50 bg-muted/20 px-3 py-2.5 text-sm text-muted-foreground leading-relaxed">
-    <p>用户想要一个 TodoList 页面。让我先看看项目结构：</p>
-    <p className="mt-2">1. 项目使用 React + TypeScript + Tailwind</p>
-    <p>2. 已经有 shadcn/ui 组件库</p>
-    <p>3. 需要创建 TodoList 组件和相关状态管理</p>
-    <p className="mt-2">我应该先读取 App.tsx 了解当前路由结构，然后创建组件...</p>
-  </div>
-)
+function CotContent() {
+  const { t } = useLocale()
+  return (
+    <div className="border-t border-border/50 bg-muted/20 px-3 py-2.5 text-sm text-muted-foreground leading-relaxed">
+      <p>{t("thinking.cot.intro")}</p>
+      <p className="mt-2">{t("thinking.cot.line1")}</p>
+      <p>{t("thinking.cot.line2")}</p>
+      <p>{t("thinking.cot.line3")}</p>
+      <p className="mt-2">{t("thinking.cot.conclusion")}</p>
+    </div>
+  )
+}
 
 function ExpandableThinkingCard({ duration, statusIcon }: {
   duration?: string
   statusIcon: React.ReactNode
 }) {
+  const { t } = useLocale()
   const [expanded, setExpanded] = useState(false)
 
   return (
@@ -76,14 +81,14 @@ function ExpandableThinkingCard({ duration, statusIcon }: {
         </span>
         <span className="font-medium text-foreground">Thinking</span>
         <span className="text-xs text-muted-foreground/60 truncate flex-1 text-left">
-          {expanded ? "" : "分析项目结构，确定需要创建的文件..."}
+          {expanded ? "" : t("thinking.preview")}
         </span>
         {duration && (
           <span className="text-[11px] text-muted-foreground/50 tabular-nums shrink-0">{duration}</span>
         )}
         {statusIcon}
       </button>
-      {expanded && COT_CONTENT}
+      {expanded && <CotContent />}
     </div>
   )
 }

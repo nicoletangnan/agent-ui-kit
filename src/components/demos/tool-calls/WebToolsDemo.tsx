@@ -1,8 +1,10 @@
 import { Globe, Download, Image } from "lucide-react"
 import { ToolCallBase } from "./ToolCallBase"
 import { Badge } from "@/components/ui/badge"
+import { useLocale } from "@/i18n/locale-context"
 
 export function WebToolsDemo() {
+  const { t } = useLocale()
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
@@ -10,7 +12,7 @@ export function WebToolsDemo() {
           <Globe className="size-3" />
           Web & Media
         </Badge>
-        <span className="text-xs text-muted-foreground">搜索互联网、抓取网页、生成图片</span>
+        <span className="text-xs text-muted-foreground">{t("webTools.subtitle")}</span>
       </div>
 
       <div className="space-y-2">

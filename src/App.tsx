@@ -4,6 +4,7 @@ import { Sidebar } from "@/components/catalog/Sidebar"
 import { PhaseSection } from "@/components/catalog/PhaseSection"
 import { StateCard } from "@/components/catalog/StateCard"
 import { PHASE_META } from "@/data/agent-flow"
+import { LocaleProvider, useLocale } from "@/i18n/locale-context"
 
 import { UserInputDemo } from "@/components/demos/UserInputDemo"
 import { ContextDemo } from "@/components/demos/ContextDemo"
@@ -18,15 +19,31 @@ import { CompletionDemo } from "@/components/demos/CompletionDemo"
 
 const phases = Object.entries(PHASE_META)
 
-function App() {
+function LocaleToggle() {
+  const { locale, setLocale } = useLocale()
+  return (
+    <button
+      type="button"
+      onClick={() => setLocale(locale === "zh" ? "en" : "zh")}
+      className="text-xs font-medium px-2.5 py-1 rounded-md border border-border hover:bg-muted/50 transition-colors text-muted-foreground hover:text-foreground"
+    >
+      {locale === "zh" ? "EN" : "中文"}
+    </button>
+  )
+}
+
+function AppContent() {
+  const { t } = useLocale()
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto px-6 h-14 flex items-center gap-3">
           <Bot className="size-5 text-foreground" />
-          <h1 className="text-sm font-semibold tracking-tight">Agent UI Kit</h1>
-          <span className="text-xs text-muted-foreground">Agentic Reasoning Loop — State Catalog</span>
+          <h1 className="text-sm font-semibold tracking-tight">Agent UI Demo</h1>
+          <span className="flex-1" />
+          <LocaleToggle />
         </div>
       </header>
 
@@ -37,7 +54,7 @@ function App() {
         <main className="flex-1 min-w-0 space-y-12">
           {/* Phase 0: User Input */}
           <PhaseSection number={0} {...phases[0][1]}>
-            <StateCard stateName="composing → attaching → selecting_model → selecting_mode → submitted" description="用户编写 prompt，附加文件引用，选择模型和模式，然后发送">
+            <StateCard stateName="composing → attaching → selecting_model → selecting_mode → submitted" description={t("app.phase0.statecard")}>
               <UserInputDemo />
             </StateCard>
           </PhaseSection>
@@ -46,7 +63,7 @@ function App() {
 
           {/* Phase 1: Context Assembly */}
           <PhaseSection number={1} {...phases[1][1]}>
-            <StateCard stateName="gathering_open_files → ... → gathering_skills → context_ready" description="Cursor 自动收集工作区上下文：打开的文件、光标位置、lint 错误、终端输出、git 状态、规则等">
+            <StateCard stateName="gathering_open_files → ... → gathering_skills → context_ready" description={t("app.phase1.statecard")}>
               <ContextDemo />
             </StateCard>
           </PhaseSection>
@@ -55,7 +72,7 @@ function App() {
 
           {/* Phase 2: Thinking */}
           <PhaseSection number={2} {...phases[2][1]}>
-            <StateCard stateName="thinking_started → thinking_streaming → thinking_complete" description="Agent 的 Chain-of-Thought 推理，UI 显示为可折叠的 Thinking 区域">
+            <StateCard stateName="thinking_started → thinking_streaming → thinking_complete" description={t("app.phase2.statecard")}>
               <ThinkingDemo />
             </StateCard>
           </PhaseSection>
@@ -64,7 +81,7 @@ function App() {
 
           {/* Phase 3: Task Planning */}
           <PhaseSection number={3} {...phases[3][1]}>
-            <StateCard stateName="no_plan_needed | creating_todos → todos_created → todo_in_progress → todo_completed" description="Agent 将复杂任务分解为步骤，逐步执行并标记进度；简单任务则跳过规划">
+            <StateCard stateName="no_plan_needed | creating_todos → todos_created → todo_in_progress → todo_completed" description={t("app.phase3.statecard")}>
               <TodoListDemo />
             </StateCard>
           </PhaseSection>
@@ -80,7 +97,7 @@ function App() {
 
           {/* Phase 5: Streaming */}
           <PhaseSection number={5} {...phases[5][1]}>
-            <StateCard stateName="stream_started → stream_text | stream_code_block | stream_markdown → stream_paused → stream_resumed → stream_complete" description="Agent 逐 token 生成文本、代码块、Markdown，中途可能暂停等待工具结果后恢复">
+            <StateCard stateName="stream_started → stream_text | stream_code_block | stream_markdown → stream_paused → stream_resumed → stream_complete" description={t("app.phase5.statecard")}>
               <StreamingDemo />
             </StateCard>
           </PhaseSection>
@@ -96,7 +113,7 @@ function App() {
 
           {/* Phase 7: Verification */}
           <PhaseSection number={7} {...phases[7][1]}>
-            <StateCard stateName="checking_lints → lints_found | lints_clean → running_command → command_success | command_failed → screenshot_taken" description="Agent 自检代码质量：lint、构建命令、浏览器截图，发现错误时自动修复">
+            <StateCard stateName="checking_lints → lints_found | lints_clean → running_command → command_success | command_failed → screenshot_taken" description={t("app.phase7.statecard")}>
               <VerificationDemo />
             </StateCard>
           </PhaseSection>
@@ -112,13 +129,21 @@ function App() {
 
           {/* Phase 9: Completion */}
           <PhaseSection number={9} {...phases[9][1]}>
-            <StateCard stateName="turn_complete → awaiting_followup → conversation_idle" description="本轮回复结束，显示分隔线和后续建议，进入空闲等待">
+            <StateCard stateName="turn_complete → awaiting_followup → conversation_idle" description={t("app.phase9.statecard")}>
               <CompletionDemo />
             </StateCard>
           </PhaseSection>
         </main>
       </div>
     </div>
+  )
+}
+
+function App() {
+  return (
+    <LocaleProvider>
+      <AppContent />
+    </LocaleProvider>
   )
 }
 

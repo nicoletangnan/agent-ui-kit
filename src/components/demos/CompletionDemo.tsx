@@ -2,6 +2,7 @@ import { useState, createContext, useContext } from "react"
 import { CheckCircle2, MessageCircle, Clock } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
+import { useLocale } from "@/i18n/locale-context"
 
 type CompletionViewMode = "turn_complete" | "idle"
 
@@ -46,6 +47,13 @@ function SegmentedControl() {
 
 function CompletionCard() {
   const { mode } = useContext(CompletionStateContext)
+  const { t } = useLocale()
+
+  const followUps = [
+    t("completion.followup.1"),
+    t("completion.followup.2"),
+    t("completion.followup.3"),
+  ]
 
   if (mode === "idle") {
     return (
@@ -60,25 +68,19 @@ function CompletionCard() {
           <div className="flex items-center gap-2.5 px-3 py-2.5 text-sm text-muted-foreground">
             <Clock className="size-4 shrink-0 text-muted-foreground/50" />
             <span className="font-medium text-foreground/60">Conversation idle</span>
-            <span className="text-xs text-muted-foreground/40 flex-1 text-left">等待用户输入新消息...</span>
+            <span className="text-xs text-muted-foreground/40 flex-1 text-left">{t("completion.idle.waiting")}</span>
           </div>
         </div>
 
         <div className="space-y-2">
           <p className="text-xs text-muted-foreground">Suggested follow-ups</p>
           <div className="flex flex-wrap gap-2">
-            <Badge variant="outline" className="cursor-pointer hover:bg-muted/50 transition-colors font-normal text-xs py-1">
-              <MessageCircle className="size-3 mr-1" />
-              添加删除功能
-            </Badge>
-            <Badge variant="outline" className="cursor-pointer hover:bg-muted/50 transition-colors font-normal text-xs py-1">
-              <MessageCircle className="size-3 mr-1" />
-              添加本地存储
-            </Badge>
-            <Badge variant="outline" className="cursor-pointer hover:bg-muted/50 transition-colors font-normal text-xs py-1">
-              <MessageCircle className="size-3 mr-1" />
-              优化移动端适配
-            </Badge>
+            {followUps.map((text, i) => (
+              <Badge key={i} variant="outline" className="cursor-pointer hover:bg-muted/50 transition-colors font-normal text-xs py-1">
+                <MessageCircle className="size-3 mr-1" />
+                {text}
+              </Badge>
+            ))}
           </div>
         </div>
       </div>
@@ -96,15 +98,11 @@ function CompletionCard() {
       <div className="space-y-2">
         <p className="text-xs text-muted-foreground">Suggested follow-ups</p>
         <div className="flex flex-wrap gap-2">
-          <Badge variant="outline" className="cursor-pointer hover:bg-muted/50 transition-colors font-normal text-xs py-1">
-            添加删除功能
-          </Badge>
-          <Badge variant="outline" className="cursor-pointer hover:bg-muted/50 transition-colors font-normal text-xs py-1">
-            添加本地存储
-          </Badge>
-          <Badge variant="outline" className="cursor-pointer hover:bg-muted/50 transition-colors font-normal text-xs py-1">
-            优化移动端适配
-          </Badge>
+          {followUps.map((text, i) => (
+            <Badge key={i} variant="outline" className="cursor-pointer hover:bg-muted/50 transition-colors font-normal text-xs py-1">
+              {text}
+            </Badge>
+          ))}
         </div>
       </div>
     </div>

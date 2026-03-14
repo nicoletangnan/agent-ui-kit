@@ -1,8 +1,10 @@
 import { Terminal } from "lucide-react"
 import { ToolCallBase } from "./ToolCallBase"
 import { Badge } from "@/components/ui/badge"
+import { useLocale } from "@/i18n/locale-context"
 
 export function TerminalToolsDemo() {
+  const { t } = useLocale()
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
@@ -10,7 +12,7 @@ export function TerminalToolsDemo() {
           <Terminal className="size-3" />
           Terminal
         </Badge>
-        <span className="text-xs text-muted-foreground">执行终端命令（安装依赖、构建、测试、git 等）</span>
+        <span className="text-xs text-muted-foreground">{t("terminalTools.subtitle")}</span>
       </div>
 
       <div className="space-y-2">

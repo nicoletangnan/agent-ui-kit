@@ -3,9 +3,11 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { DecisionCardBase } from "./DecisionCardBase"
 import { useDecisionState } from "./DecisionStateContext"
+import { useLocale } from "@/i18n/locale-context"
 
 export function ConfirmationDemo() {
   const { mode } = useDecisionState()
+  const { t } = useLocale()
 
   return (
     <div className="space-y-6">
@@ -14,23 +16,23 @@ export function ConfirmationDemo() {
           <ArrowLeftRight className="size-3" />
           Confirmation
         </Badge>
-        <span className="text-xs text-muted-foreground">awaiting_confirmation — Agent 请求确认操作</span>
+        <span className="text-xs text-muted-foreground">{t("confirm.subtitle")}</span>
       </div>
 
       <DecisionCardBase
         icon={ArrowLeftRight}
         title="Switch to Plan mode?"
-        subtitle="这个任务有多种实现方案，建议先讨论再动手。"
+        subtitle={t("confirm.cardSubtitle")}
         approvedContent={
           <div className="flex items-center gap-2 text-sm text-emerald-700">
             <CheckCircle2 className="size-4 shrink-0" />
-            <span>已切换到 Plan 模式</span>
+            <span>{t("confirm.approved.message")}</span>
           </div>
         }
         rejectedContent={
           <div className="flex items-center gap-2 text-sm text-red-600">
             <XCircle className="size-4 shrink-0" />
-            <span>用户拒绝切换，继续在 Agent 模式下执行</span>
+            <span>{t("confirm.rejected.message")}</span>
           </div>
         }
       >

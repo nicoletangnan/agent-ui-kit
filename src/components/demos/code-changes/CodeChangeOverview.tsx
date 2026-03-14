@@ -1,25 +1,27 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Layers, Zap } from "lucide-react"
+import { useLocale } from "@/i18n/locale-context"
 
 const CATEGORIES = [
-  { id: "cc-file-create", label: "File Create", scenario: "Write — 创建新文件", what: "创建" },
-  { id: "cc-file-edit", label: "File Edit", scenario: "StrReplace — 编辑现有文件 Diff 视图", what: "编辑" },
-  { id: "cc-multi-file", label: "Multi-File", scenario: "批量变更 — 多文件同时修改", what: "批量" },
+  { id: "cc-file-create", label: "File Create", scenarioKey: "codeChangeOverview.cat.create.scenario" },
+  { id: "cc-file-edit", label: "File Edit", scenarioKey: "codeChangeOverview.cat.edit.scenario" },
+  { id: "cc-multi-file", label: "Multi-File", scenarioKey: "codeChangeOverview.cat.multi.scenario" },
 ] as const
 
-const STATES = [
-  { name: "file_creating", description: "正在创建新文件" },
-  { name: "file_created", description: "新文件已创建" },
-  { name: "file_editing", description: "正在编辑现有文件" },
-  { name: "diff_shown", description: "Diff 视图已展示" },
-  { name: "diff_pending", description: "等待用户审核" },
-  { name: "diff_accepted", description: "用户接受了变更" },
-  { name: "diff_rejected", description: "用户拒绝了变更" },
+const STATE_KEYS = [
+  { name: "file_creating", descKey: "codeChangeOverview.state.file_creating" },
+  { name: "file_created", descKey: "codeChangeOverview.state.file_created" },
+  { name: "file_editing", descKey: "codeChangeOverview.state.file_editing" },
+  { name: "diff_shown", descKey: "codeChangeOverview.state.diff_shown" },
+  { name: "diff_pending", descKey: "codeChangeOverview.state.diff_pending" },
+  { name: "diff_accepted", descKey: "codeChangeOverview.state.diff_accepted" },
+  { name: "diff_rejected", descKey: "codeChangeOverview.state.diff_rejected" },
 ] as const
 
 export { CATEGORIES as CODE_CHANGE_CATEGORIES }
 
 function CategoriesTable() {
+  const { t } = useLocale()
   return (
     <div className="rounded-lg border border-border overflow-hidden">
       <table className="w-full text-xs">
@@ -40,7 +42,7 @@ function CategoriesTable() {
                   {cat.label}
                 </a>
               </td>
-              <td className="px-3 py-1.5 text-muted-foreground font-mono text-[11px]">{cat.scenario}</td>
+              <td className="px-3 py-1.5 text-muted-foreground font-mono text-[11px]">{t(cat.scenarioKey)}</td>
             </tr>
           ))}
         </tbody>
@@ -50,6 +52,7 @@ function CategoriesTable() {
 }
 
 function StatesTable() {
+  const { t } = useLocale()
   return (
     <div className="rounded-lg border border-border overflow-hidden">
       <table className="w-full text-xs">
@@ -60,10 +63,10 @@ function StatesTable() {
           </tr>
         </thead>
         <tbody className="divide-y divide-border/50">
-          {STATES.map((s) => (
+          {STATE_KEYS.map((s) => (
             <tr key={s.name} className="hover:bg-muted/20 transition-colors">
               <td className="px-3 py-1.5"><code className="text-[11px] font-mono text-foreground">{s.name}</code></td>
-              <td className="px-3 py-1.5 text-muted-foreground">{s.description}</td>
+              <td className="px-3 py-1.5 text-muted-foreground">{t(s.descKey)}</td>
             </tr>
           ))}
         </tbody>
@@ -73,10 +76,12 @@ function StatesTable() {
 }
 
 export function CodeChangeOverview() {
+  const { t } = useLocale()
+
   return (
     <div className="space-y-4">
       <p className="text-sm text-muted-foreground leading-relaxed">
-        Agent 创建或编辑文件时，Cursor 展示 Diff 视图供用户审核。使用顶部的状态切换器查看 pending / accepted / rejected 不同阶段。
+        {t("codeChangeOverview.intro")}
       </p>
 
       <Tabs defaultValue={0}>

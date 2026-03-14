@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useCodeChangeState } from "./CodeChangeStateContext"
+import { useLocale } from "@/i18n/locale-context"
 
 const NEW_FILE_LINES = [
   'import { useState } from "react"',
@@ -25,6 +26,7 @@ const NEW_FILE_LINES = [
 
 export function FileCreateDemo() {
   const { mode } = useCodeChangeState()
+  const { t } = useLocale()
 
   return (
     <div className="space-y-6">
@@ -33,7 +35,7 @@ export function FileCreateDemo() {
           <FilePlus className="size-3" />
           File Create
         </Badge>
-        <span className="text-xs text-muted-foreground">file_creating → file_created — Agent 创建新文件</span>
+        <span className="text-xs text-muted-foreground">{t("fileCreate.title")}</span>
       </div>
 
       <div className={cn(
@@ -46,7 +48,7 @@ export function FileCreateDemo() {
           <div className="flex items-center gap-2 text-sm">
             <FilePlus className="size-3.5 text-emerald-500" />
             <span className="font-medium">src/components/TodoItem.tsx</span>
-            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200 font-medium">new file</span>
+            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200 font-medium">{t("fileCreate.badge")}</span>
           </div>
           {mode === "pending" && (
             <div className="flex items-center gap-1.5">

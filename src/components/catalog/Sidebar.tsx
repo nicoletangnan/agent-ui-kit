@@ -111,8 +111,7 @@ export function Sidebar() {
               >
                 <a href={`#${phaseId}`} className="flex items-center gap-2.5 flex-1 min-w-0">
                   <span
-                    className="size-5 rounded flex items-center justify-center text-[11px] font-semibold text-white shrink-0"
-                    style={{ backgroundColor: meta.color }}
+                    className="size-5 rounded flex items-center justify-center text-[11px] font-semibold text-foreground border border-border shrink-0"
                   >
                     {i}
                   </span>

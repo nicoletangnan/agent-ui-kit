@@ -1,8 +1,10 @@
 import { Globe, ScanLine, Camera, MousePointerClick, Keyboard } from "lucide-react"
 import { ToolCallBase } from "./ToolCallBase"
 import { Badge } from "@/components/ui/badge"
+import { useLocale } from "@/i18n/locale-context"
 
 export function BrowserToolsDemo() {
+  const { t } = useLocale()
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
@@ -10,7 +12,7 @@ export function BrowserToolsDemo() {
           <Globe className="size-3" />
           Browser
         </Badge>
-        <span className="text-xs text-muted-foreground">打开网页、截图、点击、输入，验证 UI 效果</span>
+        <span className="text-xs text-muted-foreground">{t("browserTools.subtitle")}</span>
       </div>
 
       <div className="space-y-2">
@@ -97,13 +99,13 @@ export function BrowserToolsDemo() {
         <ToolCallBase
           icon={MousePointerClick}
           label="Click"
-          description='ref: e0 — button "开始探索"'
+          description={`ref: e0 — button "${t("browserTools.exploring")}"`}
           duration="120ms"
           result={
             <div className="text-xs text-muted-foreground">
               <span>Clicked element </span>
               <code className="px-1 py-0.5 rounded bg-muted text-foreground text-[11px]">e0</code>
-              <span> — button &quot;开始探索&quot;</span>
+              <span> — button &quot;{t("browserTools.exploring")}&quot;</span>
             </div>
           }
           errorRaw='Error: Element ref "e0" not found. Take a new snapshot to get updated refs.'

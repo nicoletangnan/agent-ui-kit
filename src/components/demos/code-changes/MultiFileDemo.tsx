@@ -3,6 +3,7 @@ import { Files, FilePlus, FileEdit, CheckCircle2, XCircle, ChevronDown } from "l
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { useCodeChangeState } from "./CodeChangeStateContext"
+import { useLocale } from "@/i18n/locale-context"
 
 interface FileChange {
   path: string
@@ -67,6 +68,7 @@ const FILE_CHANGES: FileChange[] = [
 
 function FileChangeRow({ file }: { file: FileChange }) {
   const { mode } = useCodeChangeState()
+  const { t } = useLocale()
   const [expanded, setExpanded] = useState(false)
   const FileIcon = file.type === "new" ? FilePlus : FileEdit
 
@@ -99,7 +101,7 @@ function FileChangeRow({ file }: { file: FileChange }) {
             ? "bg-emerald-50 text-emerald-600 border border-emerald-200"
             : "bg-amber-50 text-amber-600 border border-amber-200",
         )}>
-          {file.type}
+          {file.type === "new" ? t("multiFile.badge.new") : t("multiFile.badge.modified")}
         </span>
       </button>
 
@@ -135,6 +137,7 @@ function FileChangeRow({ file }: { file: FileChange }) {
 
 export function MultiFileDemo() {
   const { mode } = useCodeChangeState()
+  const { t } = useLocale()
   const totalAdditions = FILE_CHANGES.reduce((s, f) => s + f.additions, 0)
   const totalDeletions = FILE_CHANGES.reduce((s, f) => s + f.deletions, 0)
 
@@ -145,7 +148,7 @@ export function MultiFileDemo() {
           <Files className="size-3" />
           Multi-File
         </Badge>
-        <span className="text-xs text-muted-foreground">多文件批量变更 — 点击展开查看 Diff 预览</span>
+        <span className="text-xs text-muted-foreground">{t("multiFile.title")}</span>
       </div>
 
       <div className={cn(
@@ -164,13 +167,13 @@ export function MultiFileDemo() {
           {mode === "accepted" && (
             <span className="inline-flex items-center gap-1 text-xs text-emerald-600 font-medium">
               <CheckCircle2 className="size-3" />
-              All Accepted
+              {t("multiFile.allAccepted")}
             </span>
           )}
           {mode === "rejected" && (
             <span className="inline-flex items-center gap-1 text-xs text-red-600 font-medium">
               <XCircle className="size-3" />
-              All Rejected
+              {t("multiFile.allRejected")}
             </span>
           )}
         </div>

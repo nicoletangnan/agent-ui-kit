@@ -7,6 +7,7 @@ import { ConfirmationDemo } from "./user-decisions/ConfirmationDemo"
 import { PermissionDemo } from "./user-decisions/PermissionDemo"
 import { FileReviewDemo } from "./user-decisions/FileReviewDemo"
 import { cn } from "@/lib/utils"
+import { useLocale } from "@/i18n/locale-context"
 
 const DEMO_MAP: Record<string, React.ComponentType> = {
   "ud-choice": ChoiceDemo,
@@ -15,10 +16,10 @@ const DEMO_MAP: Record<string, React.ComponentType> = {
   "ud-file-review": FileReviewDemo,
 }
 
-const SEGMENTS: { value: DecisionViewMode; label: string; icon: React.ElementType; description: string }[] = [
-  { value: "awaiting", label: "Awaiting", icon: Clock, description: "等待用户做出决策" },
-  { value: "approved", label: "Approved", icon: CheckCircle2, description: "用户已批准操作" },
-  { value: "rejected", label: "Rejected", icon: XCircle, description: "用户已拒绝操作" },
+const SEGMENTS: { value: DecisionViewMode; label: string; icon: React.ElementType; descKey: string }[] = [
+  { value: "awaiting", label: "Awaiting", icon: Clock, descKey: "userDecision.segment.awaiting.description" },
+  { value: "approved", label: "Approved", icon: CheckCircle2, descKey: "userDecision.segment.approved.description" },
+  { value: "rejected", label: "Rejected", icon: XCircle, descKey: "userDecision.segment.rejected.description" },
 ]
 
 function SegmentedControl() {
@@ -53,10 +54,12 @@ function SegmentedControl() {
 export { DECISION_CATEGORIES }
 
 function UserDecisionDemoInner() {
+  const { t } = useLocale()
+
   return (
     <StateCard
       stateName="awaiting_choice | awaiting_confirmation | awaiting_permission | awaiting_file_review → user_approved | user_rejected | user_edited"
-      description="4 types · 7 states — 展开查看完整定义"
+      description={t("userDecision.statecard")}
       collapsibleExtra={<DecisionOverview />}
     >
       <div className="space-y-10">

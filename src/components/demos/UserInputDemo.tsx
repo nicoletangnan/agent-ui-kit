@@ -1,16 +1,18 @@
 import { useState, createContext, useContext } from "react"
-import { ArrowUp, Paperclip, AtSign, Pen, MessageCircle, Bot, ChevronDown, CheckCircle2, Loader2 } from "lucide-react"
+import { ArrowUp, Paperclip, AtSign, Pen, MessageCircle, Bot, ChevronDown, CheckCircle2, Square } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
+import { useLocale } from "@/i18n/locale-context"
 
-type InputViewMode = "composing" | "submitted"
+type InputViewMode = "empty" | "composing" | "submitted"
 
 const InputStateContext = createContext<{
   mode: InputViewMode
   setMode: (m: InputViewMode) => void
-}>({ mode: "composing", setMode: () => {} })
+}>({ mode: "empty", setMode: () => {} })
 
 const SEGMENTS: { value: InputViewMode; label: string; icon: React.ElementType }[] = [
+  { value: "empty", label: "Empty", icon: MessageCircle },
   { value: "composing", label: "Composing", icon: Pen },
   { value: "submitted", label: "Submitted", icon: CheckCircle2 },
 ]
@@ -44,65 +46,48 @@ function SegmentedControl() {
   )
 }
 
-const MODES = [
-  { label: "Agent", icon: Bot, description: "自主执行" },
-  { label: "Ask", icon: MessageCircle, description: "只回答" },
-  { label: "Manual", icon: Pen, description: "手动确认" },
-]
-
 const MODELS = ["Claude Sonnet 4", "Claude Opus 4", "GPT-4o", "Gemini 2.5 Pro"]
 
 function InputCard() {
   const { mode } = useContext(InputStateContext)
+  const { t } = useLocale()
   const [selectedMode] = useState(0)
   const [selectedModel] = useState(0)
 
-  if (mode === "submitted") {
-    return (
-      <div className="rounded-lg border border-border overflow-hidden">
-        <div className="px-3 py-3">
-          <div className="flex flex-wrap gap-1.5 mb-2">
-            <Badge variant="secondary" className="gap-1 text-xs font-normal">
-              <AtSign className="size-3" />
-              src/App.tsx
-            </Badge>
-            <Badge variant="secondary" className="gap-1 text-xs font-normal">
-              <AtSign className="size-3" />
-              src/components/
-            </Badge>
-          </div>
-          <p className="text-sm text-foreground">帮我用 React 写一个 TodoList 页面，要支持添加、删除、标记完成</p>
-        </div>
-        <div className="flex items-center gap-2 px-3 py-2 border-t border-border/50 bg-muted/20 text-xs text-muted-foreground">
-          <Bot className="size-3.5" />
-          <span>Agent</span>
-          <span className="text-muted-foreground/40">·</span>
-          <span>{MODELS[selectedModel]}</span>
-          <span className="flex-1" />
-          <Loader2 className="size-3 animate-spin" />
-          <span>Processing...</span>
-        </div>
-      </div>
-    )
-  }
+  const MODES = [
+    { label: "Agent", icon: Bot, description: t("userInput.mode.agent.description") },
+    { label: "Ask", icon: MessageCircle, description: t("userInput.mode.ask.description") },
+    { label: "Manual", icon: Pen, description: t("userInput.mode.manual.description") },
+  ]
+
+  const promptText = t("userInput.prompt")
+
+  const isSubmitted = mode === "submitted"
+  const showContent = mode === "composing"
 
   return (
     <div className="rounded-lg border border-border overflow-hidden">
-      <div className="flex flex-wrap gap-1.5 px-3 pt-3">
-        <Badge variant="secondary" className="gap-1 text-xs font-normal">
-          <AtSign className="size-3" />
-          src/App.tsx
-        </Badge>
-        <Badge variant="secondary" className="gap-1 text-xs font-normal">
-          <AtSign className="size-3" />
-          src/components/
-        </Badge>
-      </div>
+      {showContent && (
+        <div className="flex flex-wrap gap-1.5 px-3 pt-3">
+          <Badge variant="secondary" className="gap-1 text-xs font-normal">
+            <AtSign className="size-3" />
+            src/App.tsx
+          </Badge>
+          <Badge variant="secondary" className="gap-1 text-xs font-normal">
+            <AtSign className="size-3" />
+            src/components/
+          </Badge>
+        </div>
+      )}
       <div className="px-3 py-3">
-        <p className="text-sm text-foreground">
-          帮我用 React 写一个 TodoList 页面，要支持添加、删除、标记完成
-          <span className="inline-block w-0.5 h-4 bg-foreground animate-pulse ml-0.5 align-text-bottom" />
-        </p>
+        {showContent ? (
+          <p className="text-sm text-foreground">
+            {promptText}
+            <span className="inline-block w-0.5 h-4 bg-foreground animate-pulse ml-0.5 align-text-bottom" />
+          </p>
+        ) : (
+          <p className="text-sm text-muted-foreground/50">Plan, @ for context, / for commands</p>
+        )}
       </div>
       <div className="flex items-center justify-between px-3 py-2 border-t border-border/50">
         <div className="flex items-center gap-2">
@@ -113,7 +98,6 @@ function InputCard() {
             <AtSign className="size-4" />
           </button>
 
-          {/* Mode Selector */}
           <div className="flex items-center gap-0.5 border border-border rounded-md px-1.5 py-0.5">
             {MODES[selectedMode].icon && (() => {
               const Icon = MODES[selectedMode].icon
@@ -123,22 +107,31 @@ function InputCard() {
             <ChevronDown className="size-3 text-muted-foreground/50" />
           </div>
 
-          {/* Model Selector */}
           <div className="flex items-center gap-0.5 border border-border rounded-md px-1.5 py-0.5">
             <span className="text-xs text-muted-foreground">{MODELS[selectedModel]}</span>
             <ChevronDown className="size-3 text-muted-foreground/50" />
           </div>
         </div>
-        <button className="size-7 rounded-lg bg-primary flex items-center justify-center hover:bg-primary/90 transition-colors">
-          <ArrowUp className="size-4 text-primary-foreground" />
-        </button>
+        {isSubmitted ? (
+          <button
+            type="button"
+            className="size-7 rounded-full bg-foreground flex items-center justify-center hover:bg-foreground/80 transition-colors cursor-pointer"
+            title="Stop"
+          >
+            <Square className="size-3 fill-background text-background" />
+          </button>
+        ) : (
+          <button className="size-7 rounded-lg bg-primary flex items-center justify-center hover:bg-primary/90 transition-colors">
+            <ArrowUp className="size-4 text-primary-foreground" />
+          </button>
+        )}
       </div>
     </div>
   )
 }
 
 export function UserInputDemo() {
-  const [mode, setMode] = useState<InputViewMode>("composing")
+  const [mode, setMode] = useState<InputViewMode>("empty")
 
   return (
     <InputStateContext.Provider value={{ mode, setMode }}>

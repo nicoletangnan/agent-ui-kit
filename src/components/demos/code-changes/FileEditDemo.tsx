@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useCodeChangeState } from "./CodeChangeStateContext"
+import { useLocale } from "@/i18n/locale-context"
 
 type DiffLine = {
   type: "context" | "removed" | "added"
@@ -60,6 +61,7 @@ function DiffView({ lines, dimmed }: { lines: DiffLine[]; dimmed?: boolean }) {
 
 export function FileEditDemo() {
   const { mode } = useCodeChangeState()
+  const { t } = useLocale()
 
   return (
     <div className="space-y-6">
@@ -68,7 +70,7 @@ export function FileEditDemo() {
           <FileEdit className="size-3" />
           File Edit
         </Badge>
-        <span className="text-xs text-muted-foreground">file_editing → diff_shown → diff_pending — 编辑现有文件</span>
+        <span className="text-xs text-muted-foreground">{t("fileEdit.title")}</span>
       </div>
 
       <div className={cn(
@@ -81,7 +83,7 @@ export function FileEditDemo() {
           <div className="flex items-center gap-2 text-sm">
             <FileEdit className="size-3.5 text-muted-foreground" />
             <span className="font-medium">src/App.tsx</span>
-            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-600 border border-amber-200 font-medium">modified</span>
+            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-600 border border-amber-200 font-medium">{t("fileEdit.badge")}</span>
           </div>
           {mode === "pending" && (
             <div className="flex items-center gap-1.5">

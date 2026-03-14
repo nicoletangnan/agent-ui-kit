@@ -10,6 +10,7 @@ import { AgentToolsDemo } from "./tool-calls/AgentToolsDemo"
 import { VerifyToolsDemo } from "./tool-calls/VerifyToolsDemo"
 import { WebToolsDemo } from "./tool-calls/WebToolsDemo"
 import { cn } from "@/lib/utils"
+import { useLocale } from "@/i18n/locale-context"
 
 const DEMO_MAP: Record<string, React.ComponentType> = {
   "tool-file": FileToolsDemo,
@@ -21,10 +22,10 @@ const DEMO_MAP: Record<string, React.ComponentType> = {
   "tool-web": WebToolsDemo,
 }
 
-const SEGMENTS: { value: ToolViewMode; label: string; icon: React.ElementType; description: string }[] = [
-  { value: "result", label: "Result", icon: CheckCircle2, description: "点击卡片展开/收起结果" },
-  { value: "calling", label: "Calling", icon: Loader2, description: "工具正在执行中" },
-  { value: "error", label: "Error", icon: XCircle, description: "点击卡片展开/收起错误详情" },
+const SEGMENTS: { value: ToolViewMode; label: string; icon: React.ElementType; descKey: string }[] = [
+  { value: "result", label: "Result", icon: CheckCircle2, descKey: "toolCall.result.expandHint" },
+  { value: "calling", label: "Calling", icon: Loader2, descKey: "toolCall.calling.hint" },
+  { value: "error", label: "Error", icon: XCircle, descKey: "toolCall.error.expandHint" },
 ]
 
 function SegmentedControl() {
@@ -57,10 +58,12 @@ function SegmentedControl() {
 }
 
 function ToolCallDemoInner() {
+  const { t } = useLocale()
+
   return (
     <StateCard
       stateName="tool_selected → tool_calling → tool_result | tool_error"
-      description="7 categories · 5 states · 21 tools — 展开查看完整定义"
+      description={t("toolCall.statecard")}
       collapsibleExtra={<ToolOverview />}
     >
       <div className="space-y-10">

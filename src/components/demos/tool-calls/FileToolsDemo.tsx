@@ -1,8 +1,10 @@
 import { FileText, FilePlus, FileEdit, FileX, BookOpen } from "lucide-react"
 import { ToolCallBase } from "./ToolCallBase"
 import { Badge } from "@/components/ui/badge"
+import { useLocale } from "@/i18n/locale-context"
 
 export function FileToolsDemo() {
+  const { t } = useLocale()
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
@@ -10,7 +12,7 @@ export function FileToolsDemo() {
           <FileText className="size-3" />
           File Operations
         </Badge>
-        <span className="text-xs text-muted-foreground">读取、创建、编辑、删除文件</span>
+        <span className="text-xs text-muted-foreground">{t("fileTools.subtitle")}</span>
       </div>
 
       <div className="space-y-2">

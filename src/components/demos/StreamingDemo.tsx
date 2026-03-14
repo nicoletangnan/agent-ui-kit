@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { RotateCcw, Type, Code2, List, Pause, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useLocale } from "@/i18n/locale-context"
 
 // ─── Streaming sub-sections (for Sidebar navigation) ────────────────
 
@@ -95,19 +96,13 @@ function useLineStream(lines: string[], lineDelay = 80, autoStart = true) {
 }
 
 // =====================================================================
-// Demo 1: stream_text — 纯文本流式输出
+// Demo 1: stream_text — plain text streaming
 // =====================================================================
 
-const PLAIN_TEXT = `好的，我来帮你创建一个 TodoList 页面。
-
-我已经查看了项目结构，接下来会：
-
-1. 创建 \`TodoList\` 组件
-2. 添加状态管理逻辑
-3. 更新路由配置`
-
 function StreamTextDemo() {
-  const { displayed, streaming, restart } = useCharStream(PLAIN_TEXT, 20)
+  const { t } = useLocale()
+  const plainText = t("streaming.plain.content")
+  const { displayed, streaming, restart } = useCharStream(plainText, 20)
 
   return (
     <div id="stream-text" className="scroll-mt-20">
@@ -116,7 +111,7 @@ function StreamTextDemo() {
           <Type className="size-3" />
           stream_text
         </Badge>
-        <span className="text-xs text-muted-foreground">纯文本逐字输出，带闪烁光标</span>
+        <span className="text-xs text-muted-foreground">{t("streaming.text.subtitle")}</span>
       </div>
       <div className="rounded-lg border border-border p-4 min-h-[120px]">
         <div className="text-sm leading-relaxed whitespace-pre-wrap">
@@ -130,7 +125,7 @@ function StreamTextDemo() {
 }
 
 // =====================================================================
-// Demo 2: stream_code_block — 代码块流式输出
+// Demo 2: stream_code_block — code block streaming (code stays the same)
 // =====================================================================
 
 const CODE_LINES = [
@@ -198,6 +193,7 @@ function highlightLine(line: string) {
 }
 
 function StreamCodeBlockDemo() {
+  const { t } = useLocale()
   const { visibleCount, streaming, restart } = useLineStream(CODE_LINES, 60)
 
   return (
@@ -207,7 +203,7 @@ function StreamCodeBlockDemo() {
           <Code2 className="size-3" />
           stream_code_block
         </Badge>
-        <span className="text-xs text-muted-foreground">代码块逐行输出，带语法高亮</span>
+        <span className="text-xs text-muted-foreground">{t("streaming.code.subtitle")}</span>
       </div>
       <div className="rounded-lg border border-border overflow-hidden">
         <div className="flex items-center justify-between px-3 py-1.5 border-b border-border bg-muted/30">
@@ -239,7 +235,7 @@ function StreamCodeBlockDemo() {
 }
 
 // =====================================================================
-// Demo 3: stream_markdown — Markdown 结构化内容流式输出
+// Demo 3: stream_markdown — structured markdown streaming
 // =====================================================================
 
 type MdSegment =
@@ -249,20 +245,16 @@ type MdSegment =
   | { type: "table-row"; cells: string[]; isHeader?: boolean }
   | { type: "table-divider" }
 
-const MD_SEGMENTS: MdSegment[] = [
-  { type: "heading", level: 3, text: "分析结果" },
-  { type: "paragraph", text: "项目使用 React + TypeScript + Tailwind CSS，已配置 Shadcn/UI 组件库。以下是建议的文件结构：" },
-  { type: "table-row", cells: ["文件", "说明", "状态"], isHeader: true },
-  { type: "table-divider" },
-  { type: "table-row", cells: ["src/components/TodoList.tsx", "主组件", "待创建"] },
-  { type: "table-row", cells: ["src/components/TodoItem.tsx", "列表项组件", "待创建"] },
-  { type: "table-row", cells: ["src/hooks/useTodos.ts", "状态管理 Hook", "待创建"] },
-  { type: "table-row", cells: ["src/App.tsx", "路由入口", "需修改"] },
-  { type: "heading", level: 3, text: "执行计划" },
-  { type: "list-item", text: "先创建 `useTodos` hook 处理增删改查" },
-  { type: "list-item", text: "再创建 `TodoItem` 单项组件" },
-  { type: "list-item", text: "最后组装 `TodoList` 并更新路由" },
-]
+function renderInlineCode(text: string) {
+  const parts = text.split(/(`[^`]+`)/)
+  return parts.map((part, i) =>
+    part.startsWith("`") && part.endsWith("`") ? (
+      <code key={i} className="px-1 py-0.5 rounded bg-muted text-foreground text-[11px] font-mono">{part.slice(1, -1)}</code>
+    ) : (
+      <span key={i}>{part}</span>
+    )
+  )
+}
 
 function renderMdSegment(seg: MdSegment, idx: number) {
   switch (seg.type) {
@@ -312,20 +304,25 @@ function renderMdSegment(seg: MdSegment, idx: number) {
   }
 }
 
-function renderInlineCode(text: string) {
-  const parts = text.split(/(`[^`]+`)/)
-  return parts.map((part, i) =>
-    part.startsWith("`") && part.endsWith("`") ? (
-      <code key={i} className="px-1 py-0.5 rounded bg-muted text-foreground text-[11px] font-mono">{part.slice(1, -1)}</code>
-    ) : (
-      <span key={i}>{part}</span>
-    )
-  )
-}
-
 function StreamMarkdownDemo() {
+  const { t } = useLocale()
   const [visibleCount, setVisibleCount] = useState(0)
   const [streaming, setStreaming] = useState(true)
+
+  const mdSegments: MdSegment[] = [
+    { type: "heading", level: 3, text: t("streaming.md.h1") },
+    { type: "paragraph", text: t("streaming.md.intro") },
+    { type: "table-row", cells: [t("streaming.md.col.file"), t("streaming.md.col.desc"), t("streaming.md.col.status")], isHeader: true },
+    { type: "table-divider" },
+    { type: "table-row", cells: ["src/components/TodoList.tsx", t("streaming.md.row1.desc"), t("streaming.md.status.create")] },
+    { type: "table-row", cells: ["src/components/TodoItem.tsx", t("streaming.md.row2.desc"), t("streaming.md.status.create")] },
+    { type: "table-row", cells: ["src/hooks/useTodos.ts", t("streaming.md.row3.desc"), t("streaming.md.status.create")] },
+    { type: "table-row", cells: ["src/App.tsx", t("streaming.md.row4.desc"), t("streaming.md.status.modify")] },
+    { type: "heading", level: 3, text: t("streaming.md.h2") },
+    { type: "list-item", text: t("streaming.md.step1") },
+    { type: "list-item", text: t("streaming.md.step2") },
+    { type: "list-item", text: t("streaming.md.step3") },
+  ]
 
   useEffect(() => {
     if (!streaming) return
@@ -334,7 +331,7 @@ function StreamMarkdownDemo() {
     let current = 0
     const interval = setInterval(() => {
       current++
-      if (current <= MD_SEGMENTS.length) {
+      if (current <= mdSegments.length) {
         setVisibleCount(current)
       } else {
         setStreaming(false)
@@ -343,11 +340,12 @@ function StreamMarkdownDemo() {
     }, 200)
 
     return () => clearInterval(interval)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [streaming])
 
   const restart = useCallback(() => setStreaming(true), [])
 
-  const visibleSegments = MD_SEGMENTS.slice(0, visibleCount)
+  const visibleSegments = mdSegments.slice(0, visibleCount)
   const tableRows = visibleSegments.filter(s => s.type === "table-row" || s.type === "table-divider")
   const hasTable = tableRows.length > 0
   const preTableSegments = visibleSegments.slice(0, visibleSegments.findIndex(s => s.type === "table-row" || s.type === "table-divider"))
@@ -361,7 +359,7 @@ function StreamMarkdownDemo() {
           <List className="size-3" />
           stream_markdown
         </Badge>
-        <span className="text-xs text-muted-foreground">Markdown 结构化内容逐段输出（表格、列表等）</span>
+        <span className="text-xs text-muted-foreground">{t("streaming.markdown.subtitle")}</span>
       </div>
       <div className="rounded-lg border border-border p-4 min-h-[200px]">
         {preTableSegments.map((seg, i) => renderMdSegment(seg, i))}
@@ -386,22 +384,24 @@ function StreamMarkdownDemo() {
 }
 
 // =====================================================================
-// Demo 4: stream_paused / stream_resumed — 暂停与恢复
+// Demo 4: stream_paused / stream_resumed
 // =====================================================================
 
 type StreamPhase =
   | { type: "text"; content: string }
   | { type: "pause"; tool: string; duration: number }
 
-const PAUSE_DEMO_PHASES: StreamPhase[] = [
-  { type: "text", content: "让我先看看项目结构" },
-  { type: "pause", tool: "Glob — src/**/*.tsx", duration: 1500 },
-  { type: "text", content: "。找到了 12 个组件文件。现在读取入口文件" },
-  { type: "pause", tool: "Read — src/App.tsx", duration: 1200 },
-  { type: "text", content: "。好的，我已经理解了项目结构，现在开始创建 TodoList 组件。" },
-]
-
 function StreamPausedDemo() {
+  const { t } = useLocale()
+
+  const pauseDemoPhases: StreamPhase[] = [
+    { type: "text", content: t("streaming.pause.text1") },
+    { type: "pause", tool: "Glob — src/**/*.tsx", duration: 1500 },
+    { type: "text", content: t("streaming.pause.text2") },
+    { type: "pause", tool: "Read — src/App.tsx", duration: 1200 },
+    { type: "text", content: t("streaming.pause.text3") },
+  ]
+
   const [segments, setSegments] = useState<{ type: "text" | "pause"; content: string }[]>([])
   const [currentPhase, setCurrentPhase] = useState(0)
   const [charIdx, setCharIdx] = useState(0)
@@ -410,12 +410,12 @@ function StreamPausedDemo() {
 
   useEffect(() => {
     if (done) return
-    if (currentPhase >= PAUSE_DEMO_PHASES.length) {
+    if (currentPhase >= pauseDemoPhases.length) {
       setDone(true)
       return
     }
 
-    const phase = PAUSE_DEMO_PHASES[currentPhase]
+    const phase = pauseDemoPhases[currentPhase]
 
     if (phase.type === "text") {
       setPaused(false)
@@ -450,6 +450,7 @@ function StreamPausedDemo() {
       }, phase.duration)
       return () => clearTimeout(timer)
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPhase, charIdx, done])
 
   const restart = useCallback(() => {
@@ -469,7 +470,7 @@ function StreamPausedDemo() {
           <Pause className="size-3" />
           stream_paused → stream_resumed
         </Badge>
-        <span className="text-xs text-muted-foreground">输出中途暂停等待工具结果，然后恢复</span>
+        <span className="text-xs text-muted-foreground">{t("streaming.pause.subtitle")}</span>
       </div>
       <div className="rounded-lg border border-border p-4 min-h-[100px]">
         <div className="text-sm leading-relaxed">
@@ -502,7 +503,7 @@ function StreamPausedDemo() {
 }
 
 // =====================================================================
-// Main export — 组合所有 demo
+// Main export
 // =====================================================================
 
 export function StreamingDemo() {
